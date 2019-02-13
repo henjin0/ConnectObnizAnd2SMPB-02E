@@ -1,0 +1,42 @@
+// 上からそれぞれのコマンドの設定を表します。
+// i2cのmode設定。今回はマスターです。
+// CTRL MEASを設定する。244がレジスタのアドレスで255が設定値です。
+// TEMP_TXD0-2, PRESS_TXD0-2を取得。EMP_TXD0-2, PRESS_TXD0-2の順番にアドレスを示す。
+// アドレスから値を取得する。writeで実行した結果をObniz Cloudで保持してくれているのかなぁ…？
+// RESET制御レジスタにソフトリセットを設定する。
+[
+    {
+        "i2c0": {
+            "mode": "master",
+            "sda": 0,
+            "scl": 1,
+            "clock": 500000
+        },
+        "io3":true,
+        "io2":false
+    },{
+        "i2c0": {
+            "address": 86,
+            "address_bits": 7,
+            "data": [244,255]
+        }
+    },{
+        "i2c0": {
+            "address": 86,
+            "address_bits": 7,
+            "data": [252,251,250,249,248,247]
+        }
+    },{
+      "i2c0": {
+            "address": 86,
+            "address_bits": 7,
+            "read": 6
+      }
+    },{
+        "i2c0": {
+            "address": 86,
+            "address_bits": 7,
+            "data": [224,230]
+        }
+    }
+]
