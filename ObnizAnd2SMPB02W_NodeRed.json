@@ -1,0 +1,295 @@
+[
+    {
+        "id": "2d9b4bc4.ec8544",
+        "type": "websocket in",
+        "z": "38869929.4e5096",
+        "name": "receive",
+        "server": "bcb9eb95.563fd8",
+        "client": "",
+        "x": 70,
+        "y": 300,
+        "wires": [
+            [
+                "b486b74d.1ad568"
+            ]
+        ]
+    },
+    {
+        "id": "54fd5084.6c148",
+        "type": "websocket out",
+        "z": "38869929.4e5096",
+        "name": "send",
+        "server": "bcb9eb95.563fd8",
+        "client": "",
+        "x": 430,
+        "y": 120,
+        "wires": []
+    },
+    {
+        "id": "efd22d2d.78436",
+        "type": "inject",
+        "z": "38869929.4e5096",
+        "name": "",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "repeat": "",
+        "crontab": "",
+        "once": true,
+        "onceDelay": "1",
+        "x": 110,
+        "y": 100,
+        "wires": [
+            [
+                "220ae733.298378"
+            ]
+        ]
+    },
+    {
+        "id": "220ae733.298378",
+        "type": "template",
+        "z": "38869929.4e5096",
+        "name": "init",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "json",
+        "syntax": "mustache",
+        "template": "[\n    {\n        \"i2c0\": {\n            \"mode\": \"master\",\n            \"sda\": 3,\n            \"scl\": 4,\n            \"clock\": 400000\n        },\n        \"io5\":false,\n        \"io6\":true\n    },{\n        \"i2c0\": {\n            \"address\": 86,\n            \"address_bits\": 7,\n            \"data\": [244,255]\n        }\n    },{\n        \"i2c0\": {\n            \"address\": 86,\n            \"address_bits\": 7,\n            \"data\": [184,183,182,181,180,179,178]\n        }\n    },{\n      \"i2c0\": {\n            \"address\": 86,\n            \"address_bits\": 7,\n            \"read\": 7\n      }\n    }\n]\n",
+        "output": "str",
+        "x": 250,
+        "y": 100,
+        "wires": [
+            [
+                "54fd5084.6c148"
+            ]
+        ]
+    },
+    {
+        "id": "43e0831d.2c7f3c",
+        "type": "debug",
+        "z": "38869929.4e5096",
+        "name": "",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "x": 690,
+        "y": 380,
+        "wires": []
+    },
+    {
+        "id": "236b9e85.e028f2",
+        "type": "function",
+        "z": "38869929.4e5096",
+        "name": "Temp",
+        "func": "TEMP_TXD0 = msg.payload['0'].i2c0.data[2];\nTEMP_TXD1 = msg.payload['0'].i2c0.data[1];\nTEMP_TXD2 = msg.payload['0'].i2c0.data[0];\n\nDt = ((TEMP_TXD2<<16)+(TEMP_TXD1<<8)+(TEMP_TXD0))-Math.pow(2,23);\nmsg.payload.Dt = (TEMP_TXD2<<16)+(TEMP_TXD1<<8)+(TEMP_TXD0);\n\n\nCOE_a2 = flow.get(\"COE_a2\");\nmsg.payload.COE_a2 = COE_a2;\n\nCOE_a1 = flow.get(\"COE_a1\");\nmsg.payload.COE_a1 = COE_a1;\n\nCOE_a0_ex = flow.get(\"COE_a0_ex\");\nmsg.payload.COE_a0_ex=COE_a0_ex;\nCOE_a0 = flow.get(\"COE_a0\");\nmsg.payload.COE_a0 = COE_a0;\n\nmsg.payload.temp = (COE_a0+(COE_a1+COE_a2*Dt)*Dt)/256;\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 530,
+        "y": 300,
+        "wires": [
+            [
+                "9db0a32f.8abfb"
+            ]
+        ]
+    },
+    {
+        "id": "b486b74d.1ad568",
+        "type": "json",
+        "z": "38869929.4e5096",
+        "name": "",
+        "property": "payload",
+        "action": "",
+        "pretty": false,
+        "x": 130,
+        "y": 240,
+        "wires": [
+            [
+                "c8e54436.35b448"
+            ]
+        ]
+    },
+    {
+        "id": "e3fb1e1d.cee1b",
+        "type": "template",
+        "z": "38869929.4e5096",
+        "name": "send only",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "json",
+        "syntax": "mustache",
+        "template": "[\n    {\n        \"i2c0\": {\n            \"mode\": \"master\",\n            \"sda\": 3,\n            \"scl\": 4,\n            \"clock\": 400000\n        },\n        \"io5\":false,\n        \"io6\":true\n    },{\n        \"i2c0\": {\n            \"address\": 86,\n            \"address_bits\": 7,\n            \"data\": [244,255]\n        }\n    },{\n        \"i2c0\": {\n            \"address\": 86,\n            \"address_bits\": 7,\n            \"data\": [252,251,250]\n        }\n    },{\n      \"i2c0\": {\n            \"address\": 86,\n            \"address_bits\": 7,\n            \"read\": 3\n      }\n    }\n]\n",
+        "output": "str",
+        "x": 260,
+        "y": 140,
+        "wires": [
+            [
+                "54fd5084.6c148"
+            ]
+        ]
+    },
+    {
+        "id": "3712191b.64c536",
+        "type": "inject",
+        "z": "38869929.4e5096",
+        "name": "",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "repeat": "2",
+        "crontab": "",
+        "once": true,
+        "onceDelay": "2",
+        "x": 110,
+        "y": 140,
+        "wires": [
+            [
+                "e3fb1e1d.cee1b"
+            ]
+        ]
+    },
+    {
+        "id": "726c0d6f.e41914",
+        "type": "comment",
+        "z": "38869929.4e5096",
+        "name": "ObnizのReadに関するメモ",
+        "info": "Obnizのreadで入ってきたデータは、FILOとなる。\nCOFの値はflow内で共有する\n（init実行後にflowからよび出せる。）",
+        "x": 130,
+        "y": 200,
+        "wires": []
+    },
+    {
+        "id": "98491741.549848",
+        "type": "function",
+        "z": "38869929.4e5096",
+        "name": "init COF",
+        "func": "COE_a2_0 = msg.payload['0'].i2c0.data[5];\nCOE_a2_1 = msg.payload['0'].i2c0.data[4];\nCOE_a2 = (COE_a2_1 << 8) + COE_a2_0;\nCOE_a2 = -(COE_a2 & (32768))| (COE_a2 & (32768-1));\nCOE_a2 = (-1.9e-11 + ((1.2e-10 * COE_a2) / 32767.0));\nflow.set(\"COE_a2\",COE_a2);\n\nCOE_a1_0 = msg.payload['0'].i2c0.data[3];\nCOE_a1_1 = msg.payload['0'].i2c0.data[2];\nCOE_a1 = (COE_a1_1 << 8) + COE_a1_0;\nCOE_a1 = -((COE_a1 & (32768))) | (COE_a1 & (32768-1));\nCOE_a1 = (-6.3E-03+ ((4.3E-04 * COE_a1) / 32767.0));\nflow.set(\"COE_a1\",COE_a1);\n\nCOE_a0_ex = msg.payload['0'].i2c0.data[6] & 15;\nflow.set(\"COE_a0_ex\",COE_a0_ex);\nCOE_a0_0 = msg.payload['0'].i2c0.data[1];\nCOE_a0_1 = msg.payload['0'].i2c0.data[0];\nCOE_a0 = (COE_a0_1 << 12) + (COE_a0_0<<4)+(COE_a0_ex);\nCOE_a0 = -((COE_a0 & (524288))) | (COE_a0 & (524288-1));\nCOE_a0 = COE_a0/16\nflow.set(\"COE_a0\",COE_a0);\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 540,
+        "y": 380,
+        "wires": [
+            [
+                "43e0831d.2c7f3c"
+            ]
+        ]
+    },
+    {
+        "id": "c8e54436.35b448",
+        "type": "change",
+        "z": "38869929.4e5096",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload.flag",
+                "pt": "msg",
+                "to": "$count(msg.payload[\"0\"].i2c0.data)\t",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 260,
+        "y": 300,
+        "wires": [
+            [
+                "87e06baf.104108"
+            ]
+        ]
+    },
+    {
+        "id": "87e06baf.104108",
+        "type": "switch",
+        "z": "38869929.4e5096",
+        "name": "",
+        "property": "payload.flag",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "3",
+                "vt": "num"
+            },
+            {
+                "t": "eq",
+                "v": "7",
+                "vt": "num"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 410,
+        "y": 340,
+        "wires": [
+            [
+                "236b9e85.e028f2"
+            ],
+            [
+                "98491741.549848"
+            ]
+        ]
+    },
+    {
+        "id": "d171573d.174ca8",
+        "type": "comment",
+        "z": "38869929.4e5096",
+        "name": "参考資料",
+        "info": "issaxugのハンズオン資料がものすごく参考になった。\nhttps://github.com/isaaxug/2smpb02e-with-isaax",
+        "x": 300,
+        "y": 240,
+        "wires": []
+    },
+    {
+        "id": "db55c91b.ae6818",
+        "type": "comment",
+        "z": "38869929.4e5096",
+        "name": " 動かし方",
+        "info": "initを実行してからsend onlyを実行する\n",
+        "x": 80,
+        "y": 60,
+        "wires": []
+    },
+    {
+        "id": "9db0a32f.8abfb",
+        "type": "function",
+        "z": "38869929.4e5096",
+        "name": "temp getter",
+        "func": "mytemp=Math.round(msg.payload.temp * 100) / 100;\nglobal.set(\"mytemp\",mytemp);\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 670,
+        "y": 300,
+        "wires": [
+            [
+                "85766387.a0df6"
+            ]
+        ]
+    },
+    {
+        "id": "85766387.a0df6",
+        "type": "debug",
+        "z": "38869929.4e5096",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload.temp",
+        "x": 850,
+        "y": 300,
+        "wires": []
+    },
+    {
+        "id": "bcb9eb95.563fd8",
+        "type": "websocket-listener",
+        "z": "",
+        "path": "wss://2ws.obniz.io/obniz/XXXX-XXXX/ws/1",
+        "wholemsg": "false"
+    }
+]
